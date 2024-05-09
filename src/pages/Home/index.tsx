@@ -16,7 +16,8 @@ export default class Home extends Component<Props, S> {
       sampleStateNumber: 0,
     };
   }
+
   render() {
-    return <div>Home {this.state.sampleStateNumber}</div>;
+    return <div>Home {this.state.sampleStateNumber} adfa {console.log(this)}</div>;
   }
 }

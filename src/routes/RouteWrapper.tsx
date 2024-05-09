@@ -11,10 +11,8 @@ const RouteWrapper = () => {
           <Route
             key={`${Current.path}-${index}`}
             path={Current.path}
-            exact={Current.exact}
-          >
-            <CurrentComponent />
-          </Route>
+            component={CurrentComponent}
+          />
         );
       })}
     </Switch>
