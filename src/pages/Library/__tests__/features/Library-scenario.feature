@@ -4,7 +4,7 @@ Feature: Fetching Pokémon data based on generation
     Given I have a generation selected
     When I fetch Pokémon data
     Then I should receive Pokémon data for that generation
-    And I I should see Pokémon cards displayed
+    And I should see Pokémon cards displayed
 
   Scenario: Display error message when data fetching fails
     Given the user is viewing Library page

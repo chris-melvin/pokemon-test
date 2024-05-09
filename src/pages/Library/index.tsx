@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import PokemonCard from "../../components/Card";
 import { Grid } from "@mui/material";
+import getPokemonList from "../../query/getPokemonList";
 
 // Props
 export interface Props {
@@ -29,12 +30,12 @@ export default class Library extends Component<Props, S> {
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     // Initial fetch when component mounts
     this.fetchData();
   }
 
-  componentDidUpdate(prevProps: Props) {
+  async componentDidUpdate(prevProps: Props) {
     // Check if gen prop has changed
     if (this.props.match?.params?.gen !== prevProps.match?.params?.gen) {
       // Refetch data if gen has changed
@@ -42,32 +43,24 @@ export default class Library extends Component<Props, S> {
     }
   }
 
-  fetchData() {
+  fetchData = async () => {
     // Fetch data based on the current value of gen
     if (this.props.match?.params?.gen) {
-      fetch(
-        `https://pokeapi.co/api/v2/generation/${this.props.match.params.gen}`
-      )
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
-          }
-          return response.json();
-        })
-        .then((data) => {
-          this.setState({
-            data: data,
-            isLoading: false,
-          });
-        })
-        .catch((error) => {
-          this.setState({
-            error: error,
-            isLoading: false,
-          });
+      try {
+        const response = await getPokemonList(this.props.match.params.gen);
+
+        this.setState({
+          data: response.data,
+          isLoading: false,
         });
+      } catch (error: any) {
+        this.setState({
+          error: error,
+          isLoading: false,
+        });
+      }
     }
-  }
+  };
 
   render() {
     if (this.state.isLoading) {
@@ -75,7 +68,7 @@ export default class Library extends Component<Props, S> {
     }
 
     if (this.state.error) {
-      return <div>Error: {this.state.error.message}</div>;
+      return <span className="error">Error: {this.state.error.message}</span>;
     }
 
     return (

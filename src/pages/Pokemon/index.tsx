@@ -8,6 +8,7 @@ import {
   Typography,
   capitalize,
 } from "@mui/material";
+import getPokemon from "../../query/getPokemon";
 
 // Props
 interface Props {
@@ -38,12 +39,12 @@ export default class Pokemon extends Component<Props, S> {
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     // Initial fetch when component mounts
     this.fetchData();
   }
 
-  componentDidUpdate(prevProps: Props) {
+  async componentDidUpdate(prevProps: Props) {
     // Check if gen prop has changed
     if (
       this.props.match?.params?.pokemon !== prevProps.match?.params?.pokemon
@@ -52,49 +53,35 @@ export default class Pokemon extends Component<Props, S> {
       this.fetchData();
     }
   }
-
-  fetchData() {
+  fetchData = async () => {
     // Fetch data based on the current value of gen
     if (this.props.match?.params?.pokemon) {
-      const getPokemonRequest = fetch(
-        `https://pokeapi.co/api/v2/pokemon/${this.props.match.params.pokemon}`
-      );
-      const getPokemonSpecies = fetch(
-        `https://pokeapi.co/api/v2/pokemon-species/${this.props.match.params.pokemon}`
-      );
-
-      Promise.all([getPokemonRequest, getPokemonSpecies])
-        .then(([pokemonResponse, speciesResponse]) => {
-          if (!pokemonResponse.ok || !speciesResponse.ok) {
-            throw new Error("Network response was not ok");
-          }
-          return Promise.all([pokemonResponse.json(), speciesResponse.json()]);
-        })
-        .then(([pokemonData, speciesData]) => {
-          this.setState({
-            data: pokemonData,
-            species: speciesData,
-            isLoading: false,
-          });
-        })
-        .catch((error) => {
-          this.setState({
-            error: error,
-            isLoading: false,
-          });
+      try {
+        const pokemonResponse = await getPokemon(
+          this.props.match.params.pokemon
+        );
+        this.setState({
+          data: pokemonResponse.data,
+          isLoading: false,
         });
+      } catch (error: any) {
+        this.setState({
+          error: error,
+          isLoading: false,
+        });
+      }
     }
-  }
+  };
 
   render() {
     const pokemonData = this.state.data;
-    const pokemonSpecies = this.state.species;
+    // const pokemonSpecies = this.state.species;
 
     if (this.state.isLoading) {
       return <Typography>Loading...</Typography>;
     }
     if (this.state.error) {
-      return <Typography>Error: {this.state.error.message}</Typography>;
+      return <p className="error">Error: {this.state.error.message}</p>;
     }
 
     return (
@@ -103,9 +90,7 @@ export default class Pokemon extends Component<Props, S> {
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <Box padding="5px">
-                <Typography textAlign="start">
-                  {capitalize(pokemonData.name)}
-                </Typography>
+                <p className="pokemonName">{pokemonData.name}</p>
                 <img
                   src={pokemonData.sprites.other.showdown.front_default}
                   alt={pokemonData.name}
@@ -145,28 +130,31 @@ export default class Pokemon extends Component<Props, S> {
                   <CardContent>
                     <Grid container spacing={2}>
                       <Grid item xs={6}>
-                        <Typography textAlign="start">
+                        <Typography textAlign="start" className="pokemonHeight">
                           Height: {pokemonData.height}
                         </Typography>
                       </Grid>
 
                       <Grid item xs={6}>
-                        <Typography textAlign="start">
+                        <Typography textAlign="start" className="pokemonWeight">
                           Weight: {pokemonData.weight}
                         </Typography>
                       </Grid>
                       <Grid item xs={6}>
                         {/*Category  */}
-                        <Typography textAlign="start">
-                          Category: {pokemonData.species.name}
+                        <Typography
+                          textAlign="start"
+                          className="pokemonSpecies"
+                        >
+                          Species: {pokemonData.species.name}
                         </Typography>
                       </Grid>
 
                       <Grid item xs={6}>
                         {/* Generation */}
-                        <Typography textAlign="start">
+                        {/* <Typography textAlign="start">
                           Generation: {pokemonSpecies.generation.name}
-                        </Typography>
+                        </Typography> */}
                       </Grid>
                     </Grid>
                   </CardContent>
@@ -178,7 +166,9 @@ export default class Pokemon extends Component<Props, S> {
                       {pokemonData.abilities.map(
                         (ability: any, index: number) => (
                           <Grid item xs={6} key={index}>
-                            <Typography>{ability.ability.name}</Typography>
+                            <Typography className="pokemonAbility">
+                              {ability.ability.name}
+                            </Typography>
                           </Grid>
                         )
                       )}
