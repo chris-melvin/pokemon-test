@@ -14,9 +14,18 @@ export interface Props {
 
 // State
 interface S {
-  data: any | null;
+  data: PokemonListResponse | null;
   isLoading: boolean;
   error: Error | null;
+}
+
+// Data types
+interface Pokemon {
+  name: string;
+}
+
+interface PokemonListResponse {
+  pokemon_species: Pokemon[];
 }
 
 export default class Library extends Component<Props, S> {

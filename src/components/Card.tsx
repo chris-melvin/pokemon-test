@@ -22,9 +22,30 @@ interface Props {
 
 // State
 interface S {
-  data: any | null;
+  data: PokemonData | null;
   isLoading: boolean;
   error: Error | null;
+}
+
+// Data Types
+interface PokemonData {
+  id: number;
+  sprites: {
+    other: {
+      "official-artwork": {
+        front_default: string;
+      };
+    };
+  };
+  species: {
+    name: string;
+  };
+  types: {
+    slot: number;
+    type: {
+      name: string;
+    };
+  }[];
 }
 
 export default class PokemonCard extends Component<Props, S> {
