@@ -90,4 +90,83 @@ defineFeature(feature, (test) => {
       );
     });
   });
+
+  // Scenario: Change Pokémon data when generation is changed
+  // Given I have a generation selected
+  // When I change the generation
+  // Then I should receive Pokémon data for the new generation
+  // And I should see Pokémon cards displayed
+
+  test("Change Pokémon data when generation is changed", ({
+    given,
+    when,
+    then,
+  }) => {
+    let wrapper: ShallowWrapper<Props, {}, Library>;
+    let instance: Library;
+
+    given("I have a generation selected", () => {
+      const mockResponse = {
+        pokemon_species: [
+          { name: "bulbasaur" },
+          { name: "charmander" },
+          { name: "squirtle" },
+        ],
+      };
+
+      global.fetch = jest.fn(() =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve(mockResponse),
+        })
+      ) as any;
+      wrapper = shallow(<Library match={{ params: { gen: "1" } }} />);
+    });
+
+    when("I change the generation", async () => {
+      instance = wrapper.instance() as Library;
+      wrapper.simulate("update", { match: { params: { gen: "2" } } });
+      const mockResponse = {
+        pokemon_species: [
+          {
+            name: "Chikorita",
+          },
+          {
+            name: "Cyndaquil",
+          },
+          {
+            name: "Totodile",
+          },
+        ],
+      };
+      global.fetch = jest.fn(() =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve(mockResponse),
+        })
+      ) as any;
+      await instance.componentDidUpdate({ match: { params: { gen: "2" } } });
+    });
+
+    then("I should receive Pokémon data for the new generation", () => {
+      expect(wrapper.state("isLoading")).toBe(false);
+      expect(wrapper.state("data")).toEqual({
+        pokemon_species: [
+          {
+            name: "Chikorita",
+          },
+          {
+            name: "Cyndaquil",
+          },
+          {
+            name: "Totodile",
+          },
+        ],
+      });
+    });
+
+    then("I should see Pokémon cards displayed", () => {
+      expect(wrapper.find(PokemonCard)).toHaveLength(3); // Assuming 3 Pokémon species in the mock data
+    });
+  });
 });

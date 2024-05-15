@@ -18,6 +18,6 @@ export default class Home extends Component<Props, S> {
   }
 
   render() {
-    return <div>Home {this.state.sampleStateNumber} {console.log(this)}</div>;
+    return <div>Home {this.state.sampleStateNumber} </div>;
   }
 }

@@ -1,7 +1,7 @@
 import { mount, ReactWrapper, shallow, ShallowWrapper } from "enzyme";
 import { defineFeature, loadFeature } from "jest-cucumber";
 
-import Pokemon from "../..";
+import Pokemon, { PokemonData } from "../..";
 
 const feature = loadFeature(
   "./src/pages/Pokemon/__tests__/features/Pokemon-scenario.feature"
@@ -47,7 +47,7 @@ defineFeature(feature, (test) => {
 
     given("the user is viewing a Pokemon page", () => {
       // You can set up any necessary mocks or initial conditions here
-      const mockResponsePokemon = {
+      const mockResponsePokemon: PokemonData = {
         name: "Pikachu",
         height: 4,
         weight: 60,

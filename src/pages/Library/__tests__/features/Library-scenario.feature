@@ -10,3 +10,9 @@ Feature: Fetching Pokémon data based on generation
     Given the user is viewing Library page
     When the Library data fetch fails
     Then an error message should be displayed
+  
+  Scenario: Change Pokémon data when generation is changed
+    Given I have a generation selected
+    When I change the generation
+    Then I should receive Pokémon data for the new generation
+    And I should see Pokémon cards displayed
